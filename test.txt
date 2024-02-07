@@ -1,0 +1,13 @@
+git add .
+git commit -m ""
+
+check :
+   git remote
+   
+add remote :
+   git remote add <<https:------------------->>
+check :
+   git remote -v
+   
+git push -u origin main
+

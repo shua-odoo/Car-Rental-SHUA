@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="available_cars_menu_action" model="ir.actions.act_window">
+        <field name="name">Available Cars</field>
+        <field name="res_model">car.rental.system.car</field>
+        <field name="view_mode">tree,form</field>
+        
+        <!-- <field name="domain">[('state', '=', 'available')]</field> -->
+    </record>
+
+    <!-- Tree View -->
+    <record id="available_cars_menu_action2" model="ir.ui.view">
+        <field name="name">Available Cars</field>
+        <field name="model">car.rental.system.car</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="state" />
+                <field name="rent_price" />
+                <field name="description" />
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- Available Cars Form View -->
+    <record id="available_cars_form_view" model="ir.ui.view">
+        <field name="name">Available Cars Form</field>
+        <field name="model">car.rental.system.car</field>
+        <field name="arch" type="xml">
+            <form string="Available Car">
+                <sheet>
+                    <h1>
+                        <field name="name" string="Car Model" />
+                    </h1>
+                    <group>
+                        <group>
+
+                            <field name="state" />
+                            <field name="rent_price" />
+                        </group>
+                        <group>
+
+                            <field name="description" />
+                            <field name="rent_price" />
+                        </group>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

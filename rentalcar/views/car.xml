@@ -24,32 +24,79 @@
     </record>
 
 
-    <!-- Available Cars Form View -->
     <record id="available_cars_form_view" model="ir.ui.view">
         <field name="name">Available Cars Form</field>
         <field name="model">car.rental.system.car</field>
         <field name="arch" type="xml">
             <form string="Available Car">
+                <header>
+                    <button name="reserve_car" string="Reserve this Car" type="object" class="btn-primary"  />
+                    <!-- <button name="unreserve_car" string="Unreserve this Car" type="object" class="btn-primary" /> -->
+                </header>
                 <sheet>
-                    <h1>
-                        <field name="name" string="Car Model" />
-                    </h1>
-                    <group>
+                    <!-- Basic Details Section -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" string="Car Model"/>
+                        </h1>
+                        <div><field name="image" widget="image" string="Image"/></div>
+                        
+
+                        <div class="oe_inline">
+                            <field name="state" string="State"/>
+                            <field name="rent_price" string="Rent Price"/>
+                        </div>
                         <group>
-
-                            <field name="state" />
-                            <field name="rent_price" />
+                            <group>
+                                <field name="description" string="Description"/>
+                                <field name="make" string="Make"/>
+                                <field name="model" string="Model"/>
+                            </group>
                         </group>
-                        <group>
-
-                            <field name="description" />
-                            <field name="rent_price" />
-                        </group>
-
-                    </group>
+                    </div>
+                    
+                    <notebook>
+                        <!-- General Information Page -->
+                        <page string="General Information">
+                            <group>
+                                <field name="year" string="Year"/>
+                                <field name="registration_number" string="Registration Number"/>
+                                <field name="color" string="Color"/>
+                                <field name="mileage" string="Mileage"/>
+                                <field name="fuel_type" string="Fuel Type"/>
+                                <field name="transmission_type" string="Transmission Type"/>
+                                <field name="seating_capacity" string="Seating Capacity"/>
+                                <field name="location" string="Location"/>
+                                <field name="condition" string="Condition"/>
+                            </group>
+                        </page>
+                        
+                        <!-- Availability Page -->
+                        <page string="Availability">
+                            <group>
+                                <field name="available_from" string="Available From"/>
+                                <field name="available_to" string="Available To"/>
+                            </group>
+                        </page>
+                        
+                        <!-- Additional Details Page -->
+                        <page string="Additional Details">
+                            <group>
+                                <!-- <field name="features" string="Features" widget="many2many_tags"/> -->
+                                <field name="insurance_details" string="Insurance Details"/>
+                                <field name="additional_info" string="Additional Info"/>
+                                <field name="last_serviced_on" string="Last Serviced On"/>
+                            </group>
+                        </page>
+                        
+                        <!-- Rent History Page -->
+                       
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
+    
+
 
 </odoo>

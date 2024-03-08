@@ -20,3 +20,8 @@ class CarReservation(models.Model):
     )
 
     return_date = fields.Date(string="Return Date")
+    def unreserve_car(self):
+        self.car_id.sudo().unreserve_car()
+
+    def request_unreserve_car(self):
+        self.sudo().reservation_state = "return_request"

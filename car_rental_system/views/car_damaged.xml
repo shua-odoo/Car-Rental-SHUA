@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   
+    
+
+    <menuitem
+        id="car_rental_system_base_menu"
+        name="Damaged Cars"
+        sequence="3"/>
+
+</odoo>

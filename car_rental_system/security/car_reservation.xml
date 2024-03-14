@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="normal_user_rule" model="ir.rule">
+            <field name="name">Normal User can see its own records</field>
+            <field name="model_id" ref="model_car_rental_system_car_reservation" />
+            <field name="domain_force">[('borrower_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_unlink" eval="True" />
+            <field name="perm_write" eval="True" />
+        </record>
+
+
+        <record id="manager_user_rule" model="ir.rule">
+            <field name="name">Manager can see all records</field>
+            <field name="model_id" ref="model_car_rental_system_car_reservation" />
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, group_managers)]" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_unlink" eval="True" />
+            <field name="perm_write" eval="True" />
+        </record>
+
+
+    </data>
+</odoo>

@@ -9,6 +9,7 @@ reservation_states = [
 
 class CarReservation(models.Model):
     _name = "car_rental_system.car_reservation"
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "car_rental_system.car_reservation"
 
     car_id = fields.Many2one(
@@ -16,10 +17,13 @@ class CarReservation(models.Model):
     )
     borrower_id = fields.Many2one("res.users", string="Borrower", required=True)
     reservation_state = fields.Selection(
-        selection= reservation_states, string="Reservation State", default="ongoing"
+        reservation_states, "Reservation State", default="ongoing"
     )
 
-    return_date = fields.Date(string="Return Date")
+    return_date = fields.Datetime(string="Return Date")
+
+    # Methods
+
     def unreserve_car(self):
         self.car_id.sudo().unreserve_car()
 

@@ -1,14 +1,15 @@
-from odoo import models, fields , api 
+from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 reservation_model_id = "car_rental_system.car_reservation"
 car_states = [("available", "Available"), ("rented", "Rented"), ("damaged", "Damaged")]
-manager_group_id = "rentalcar.group_managers"
+manager_group_id = "car_rental_system.group_managers"
+
 
 class Car(models.Model):
-    _name = "car.rental.system.car"
-    _description = "Car Rental System Car"
-
+    _name = "car_rental_system.car"
+    _description = "car_rental_system.car"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     name = fields.Char("Car Name", required=True)
     description = fields.Text("Brief Description")
     rent_price = fields.Float("Rent Price", required=True)
@@ -17,9 +18,11 @@ class Car(models.Model):
         "State",
         default="available",
     )
+    reservation_model_id = "car_rental_system.car_reservation"
     reservation_request = fields.Boolean(
-        "Reservation State", compute="_compute_car_reservation_request", store=True
+        "Reservation State", compute="_compute_car_reservation_request", store=False
     )
+    partner_id = fields.Many2one("res.partner", string="Partner", required=False)
     image=fields.Image()
     # Additional Fields
     make = fields.Char("Make")
@@ -39,7 +42,7 @@ class Car(models.Model):
         ('manual', 'Manual')
     ], "Transmission Type")
     seating_capacity = fields.Integer("Seating Capacity")
-    location = fields.Char("Location")
+    location = fields.Char("Location" )
     available_from = fields.Datetime("Available From")
     available_to = fields.Datetime("Available To")
     photos = fields.Binary("Photos")
@@ -53,12 +56,8 @@ class Car(models.Model):
     insurance_details = fields.Text("Insurance Details")
     additional_info = fields.Text("Additional Info")
     last_serviced_on = fields.Date("Last Serviced On")
+    # Compute Methods
 
-    '''
-The code is checking if a car currently has a reservation request.
-Specifically, it looks for cases where the car is currently being rented out (in the "rented" state) and a reservation for that car exists.
-It also checks if the person trying to rent the car is the same person who reserved it or has permission to manage reservations.
-    '''
     def _compute_car_reservation_request(self):
         reserved_car = (
             self.env[reservation_model_id]
@@ -78,10 +77,8 @@ It also checks if the person trying to rent the car is the same person who reser
             else:
                 record.reservation_request = False
 
-    '''
-   helper method for changes
-    '''
-    
+    # Methods
+
     def change_state(self, new_state):
         for car in self:
             car.state = new_state
@@ -101,7 +98,8 @@ It also checks if the person trying to rent the car is the same person who reser
             raise UserError(("Car is not available for renting"))
 
         # Manager => Open the Reservation Wizard View
-        
+        if self.env.user.has_group(manager_group_id):
+            return self.open_reservation_wizard_action_view()
         # User => Reserve Direct
         else:
             self.env[reservation_model_id].sudo().create(
@@ -113,9 +111,52 @@ It also checks if the person trying to rent the car is the same person who reser
 
         self.sudo().mark_reserved()
 
-    # def unreserve_car(self):
-    #     self.ensure_one()
-    #     if self.state != "rented":
-    #         raise UserError(("Car is not reserved yet"))
+    @api.model
+    def open_reservation_wizard_action_view(self):
+        action = self.env.ref("car_rental_system.action_wizard_rent_cars").read()[0]
+        action["context"] = {"car_ids": self.id}
+        return action
 
-    
+    def unreserve_car(self):
+        self.ensure_one()
+        if self.state != "rented":
+            raise UserError(("Car is not reserved yet"))
+
+        reserved_car = (
+            self.env[reservation_model_id]
+            .sudo()
+            .search([("car_id", "=", self.id), ("return_date", "=", None)])
+        )
+        # Save the Return Date => Now
+        reserved_car.return_date = fields.Datetime.now()
+        reserved_car.reservation_state = "returned"
+
+        self.mark_available()
+
+    def request_unreserve_car(self):
+        self.ensure_one()
+        if self.state != "rented":
+            raise UserError(("Car is not reserved yet"))
+
+        reserved_car = (
+            self.env[reservation_model_id]
+            .sudo()
+            .search([("car_id", "=", self.id), ("reservation_state", "=", "ongoing")])
+        )
+        reserved_car.reservation_state = "return_request"
+
+    def damaged_car(self):
+        self.ensure_one()
+        if self.state == "damaged":
+            raise UserError(("Car is already damaged"))
+
+        reserved_car = (
+            self.env[reservation_model_id]
+            .sudo()
+            .search([("car_id", "=", self.id), ("return_date", "=", None)])
+        )
+        # Save the Return Date => Now
+        reserved_car.return_date = fields.Datetime.now()
+        reserved_car.reservation_state = "returned"
+
+        self.mark_damaged()

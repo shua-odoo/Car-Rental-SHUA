@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="car_rent_wizard_form" model="ir.ui.view">
+        <field name="name">car rent wizard form view</field>
+        <field name="model">crs.car_reservation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Borrow cars" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <field name="user_manager" invisible="1" />
+                        <field name="borrower_id"  readonly="1" force_save="1" />
+                        <field name="borrower_id" groups="car_rental_system.group_managers" />
+
+                        <field name="car_ids" domain="[('state','=','available')]" widget="many2many_tags" required="1" />
+                    </group>
+                </sheet>
+
+                <footer>
+                    <!-- Reserve Button -->
+                    <button string="Reserve" name="add_car_reservation" class="btn-primary" type="object" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_wizard_rent_cars" model="ir.actions.act_window">
+        <field name="name">Reserve a Car</field>
+        <field name="res_model">crs.car_reservation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_wizard_rent_cars"
+        parent="car_rental_system_base_menu"
+        action="action_wizard_rent_cars"
+        sequence="3" />
+
+
+</odoo>

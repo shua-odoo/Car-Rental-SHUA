@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+
+    <t t-inherit="web.RainbowMan" t-inherit-mode="extension" owl="1">
+        <xpath expr="//svg[hasclass('o_reward_rainbow')]" position="replace">
+        </xpath>
+    </t>
+
+
+</templates>
